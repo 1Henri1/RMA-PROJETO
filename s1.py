@@ -59,12 +59,12 @@ def preve_acionamento(phid, phie):
 
 # Função de acionamento que faz o robô ir para a direita. O time.sleep conta com +0.25
 # segundos para corrigir o tempo do processamento dos PCs no lab 404-1.
-def mov_dir(handleR, handleL, client, v):
-    vang = preve_acionamento(-v, v)
+def mov_dir(handleR, handleL, client, vcurva):
+    vang = preve_acionamento(-vcurva, vcurva)
     tempo = abs(math.pi/(2*vang))
     sim.simxSetJointTargetVelocity(
-        client, handleR, -v, sim.simx_opmode_oneshot)
-    sim.simxSetJointTargetVelocity(client, handleL, v, sim.simx_opmode_oneshot)
+        client, handleR, -vcurva, sim.simx_opmode_oneshot)
+    sim.simxSetJointTargetVelocity(client, handleL, vcurva, sim.simx_opmode_oneshot)
     time.sleep(tempo+0.25)
     sim.simxSetJointTargetVelocity(client, handleR, 0, sim.simx_opmode_oneshot)
     sim.simxSetJointTargetVelocity(client, handleL, 0, sim.simx_opmode_oneshot)
@@ -72,12 +72,12 @@ def mov_dir(handleR, handleL, client, v):
 
 # Função de acionamento que faz o robô ir para a esquerda. O time.sleep conta com +0.25
 # segundos para corrigir o tempo do processamento dos PCs no lab 404-1.
-def mov_esq(handleR, handleL, client, v):
-    vang = preve_acionamento(v, -v)
+def mov_esq(handleR, handleL, client, vcurva):
+    vang = preve_acionamento(vcurva, -vcurva)
     tempo = abs(math.pi/(2*vang))
-    sim.simxSetJointTargetVelocity(client, handleR, v, sim.simx_opmode_oneshot)
+    sim.simxSetJointTargetVelocity(client, handleR, vcurva, sim.simx_opmode_oneshot)
     sim.simxSetJointTargetVelocity(
-        client, handleL, -v, sim.simx_opmode_oneshot)
+        client, handleL, -vcurva, sim.simx_opmode_oneshot)
     time.sleep(tempo+0.25)
     sim.simxSetJointTargetVelocity(client, handleR, 0, sim.simx_opmode_oneshot)
     sim.simxSetJointTargetVelocity(client, handleL, 0, sim.simx_opmode_oneshot)
@@ -85,11 +85,11 @@ def mov_esq(handleR, handleL, client, v):
 
 # Função de acionamento que faz o robô ir para trás. O time.sleep conta com +0.6
 # segundos para corrigir o tempo do processamento dos PCs no lab 404-1.
-def mov_tras(handleR, handleL, client, v):
-    vang = preve_acionamento(v, -v)
-    sim.simxSetJointTargetVelocity(client, handleR, v, sim.simx_opmode_oneshot)
+def mov_tras(handleR, handleL, client, vcurva):
+    vang = preve_acionamento(vcurva, -vcurva)
+    sim.simxSetJointTargetVelocity(client, handleR, vcurva, sim.simx_opmode_oneshot)
     sim.simxSetJointTargetVelocity(
-        client, handleL, -v, sim.simx_opmode_oneshot)
+        client, handleL, -vcurva, sim.simx_opmode_oneshot)
     tempo = abs(math.pi/(vang))
     time.sleep(tempo+0.6)
     sim.simxSetJointTargetVelocity(client, handleR, 0, sim.simx_opmode_oneshot)
@@ -97,8 +97,8 @@ def mov_tras(handleR, handleL, client, v):
 
 
 # Função de acionamento que faz o robô ir para a frente
-def vai_reto(handleR, handleL, client, v, v2):
-    sim.simxSetJointTargetVelocity(client, handleR, v, sim.simx_opmode_oneshot)
+def vai_reto(handleR, handleL, client, vcurva, v2):
+    sim.simxSetJointTargetVelocity(client, handleR, vcurva, sim.simx_opmode_oneshot)
     sim.simxSetJointTargetVelocity(
         client, handleL, v2, sim.simx_opmode_oneshot)
     time.sleep(0.01)
@@ -135,7 +135,8 @@ if clientID != -1:
     distanciaR = 0
 
     # Velocidade básica (linear). Controla a velocidade do robô no simulador.
-    v = 5
+    vcurva = 1 # velocidade durante curvas. Menor para melhor controle
+    vreto = 5 # velocidade ao ir reto
 
     # handlers de sensores
     returnCode, l_sensor = sim.simxGetObjectHandle(clientID,
@@ -161,26 +162,27 @@ if clientID != -1:
         detectionStateF, detectpx2, detectpy2, detectpz2 = lersensor(clientID, f_sensor)
         detectionStateT, detectpx3, detectpy3, detectpz3 = lersensor(clientID, t_sensor)
 
-        # os valores extras no acionamento (como v+1 ou v-0.5) são para corrigir o
+        # os valores extras no acionamento (como vcurva+1 ou vcurva-0.5) são para corrigir o
         # ângulo do robô, impedindo que ele colida com as paredes.
         if not detectionStateF or detectpz2 > 0.7:
             if detectionStateR and detectpz1 < 0.4:
-                vai_reto(r_wheel, l_wheel, clientID, v+1, v)
+                vai_reto(r_wheel, l_wheel, clientID, vreto+1, vreto)
             elif detectionStateL and detectpz0 < 0.4:
-                vai_reto(r_wheel, l_wheel, clientID, v, v+1)
+                vai_reto(r_wheel, l_wheel, clientID, vreto, vreto+1)
             if detectionStateR and distanciaR-detectpz1 > 0:
-                vai_reto(r_wheel, l_wheel, clientID, v+0.5, v)
+                vai_reto(r_wheel, l_wheel, clientID, vreto+0.5, vreto)
             elif detectionStateL and distanciaL-detectpz0 > 0:
-                vai_reto(r_wheel, l_wheel, clientID, v, v+0.5)
+                vai_reto(r_wheel, l_wheel, clientID, vreto, vreto+0.5)
             elif detectionStateR and distanciaR-detectpz1 < 0:
-                vai_reto(r_wheel, l_wheel, clientID, v-0.5, v)
+                vai_reto(r_wheel, l_wheel, clientID, vreto-0.5, vreto)
             elif detectionStateL and distanciaL-detectpz0 < 0:
-                vai_reto(r_wheel, l_wheel, clientID, v, v-0.5)
+                vai_reto(r_wheel, l_wheel, clientID, vreto, vreto-0.5)
             else:
-                vai_reto(r_wheel, l_wheel, clientID, v, v)
+                vai_reto(r_wheel, l_wheel, clientID, vreto, vreto)
             distanciaR = detectpz1
             distanciaL = detectpz0
             time.sleep(0.01)
+
         elif (detectionStateF == True and detectpz2 < 0.7):
             # faz o robô parar, freando ambas as rodas até pararem (denotado
             # pelo 0 nas funções abaixo).
@@ -199,11 +201,11 @@ if clientID != -1:
 
             if detectionStateL == True and detectionStateR == True:
                 print("Paredes detectadas na frente, na direita e na esquerda: virar 180 graus!")
-                mov_tras(r_wheel, l_wheel, clientID, v)
+                mov_tras(r_wheel, l_wheel, clientID, vcurva)
             elif detectionStateR == False:
                 print("Direita livre: virando para direita!")
                 distanciaL = 1
-                mov_dir(r_wheel, l_wheel, clientID, v)
+                mov_dir(r_wheel, l_wheel, clientID, vcurva)
 
                 detectionStateR, detectpx1, detectpy1, detectpz1 = lersensor(clientID, r_sensor)
                 detectionStateF, detectpx2, detectpy2, detectpz2 = lersensor(clientID, f_sensor)
@@ -213,18 +215,18 @@ if clientID != -1:
                 # após virar, segue em linha reta, até encontrar novamente uma parede para se guiar.
                 while detectionStateT == False and detectionStateF == False and detectionStateR == False:
                     if detectionStateR and distanciaR-detectpz1 > 0:
-                        vai_reto(r_wheel, l_wheel, clientID, v+0.4, v)
+                        vai_reto(r_wheel, l_wheel, clientID, vreto+0.4, vreto)
                         time.sleep(0.05)
                     elif detectionStateL and distanciaL-detectpz0 > 0:
-                        vai_reto(r_wheel, l_wheel, clientID, v, v+0.4)
+                        vai_reto(r_wheel, l_wheel, clientID, vreto, vreto+0.4)
                         time.sleep(0.01)
                     elif detectionStateR and distanciaR-detectpz1 < 0:
-                        vai_reto(r_wheel, l_wheel, clientID, v-0.4, v)
+                        vai_reto(r_wheel, l_wheel, clientID, vreto-0.4, vreto)
                         time.sleep(0.01)
                     elif detectionStateL and distanciaL-detectpz0 < 0:
-                        vai_reto(r_wheel, l_wheel, clientID, v, v-0.4)
+                        vai_reto(r_wheel, l_wheel, clientID, vreto, vreto-0.4)
                         time.sleep(0.01)
-                    vai_reto(r_wheel, l_wheel, clientID, v, v)
+                    vai_reto(r_wheel, l_wheel, clientID, vreto, vreto)
 
                     distanciaR = detectpz1
                     distanciaL = detectpz0
@@ -236,28 +238,28 @@ if clientID != -1:
             elif detectionStateL == False:
                 print("Esquerda livre: virando para esquerda!")
                 distanciaR = 1
-                mov_esq(r_wheel, l_wheel, clientID, v)
+                mov_esq(r_wheel, l_wheel, clientID, vcurva)
 
         if (detectionStateR == False and detectionStateF == False and detectionStateT == False):
-            vai_reto(r_wheel, l_wheel, clientID, v, v)
+            vai_reto(r_wheel, l_wheel, clientID, vreto, vreto)
             time.sleep(0.5)
-            mov_dir(r_wheel, l_wheel, clientID, v)
+            mov_dir(r_wheel, l_wheel, clientID, vcurva)
             # Controle do robô após virar: Se não detectar nenhuma parede na direita, à frente ou atrás
             # após virar, segue em linha reta, até encontrar novamente uma parede para se guiar.
             while detectionStateT == False and detectionStateF == False and detectionStateR == False:
                 if detectionStateR and distanciaR-detectpz1 > 0:
-                    vai_reto(r_wheel, l_wheel, clientID, v+0.5, v)
+                    vai_reto(r_wheel, l_wheel, clientID, vreto+0.5, vreto)
                     time.sleep(0.01)
                 elif detectionStateL and distanciaL-detectpz0 > 0:
-                    vai_reto(r_wheel, l_wheel, clientID, v, v+0.5)
+                    vai_reto(r_wheel, l_wheel, clientID, vreto, vreto+0.5)
                     time.sleep(0.01)
                 elif detectionStateR and distanciaR-detectpz1 < 0:
-                    vai_reto(r_wheel, l_wheel, clientID, v-0.5, v)
+                    vai_reto(r_wheel, l_wheel, clientID, vreto-0.5, vreto)
                     time.sleep(0.01)
                 elif detectionStateL and distanciaL-detectpz0 < 0:
-                    vai_reto(r_wheel, l_wheel, clientID, v, v-0.5)
+                    vai_reto(r_wheel, l_wheel, clientID, vreto, vreto-0.5)
                     time.sleep(0.01)
-                vai_reto(r_wheel, l_wheel, clientID, v, v)
+                vai_reto(r_wheel, l_wheel, clientID, vreto, vreto)
                 distanciaR = detectpz1
                 distanciaL = detectpz0
                 detectionStateR, detectpx1, detectpy1, detectpz1 = lersensor(clientID, r_sensor)
