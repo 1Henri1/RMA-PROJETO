@@ -1,40 +1,35 @@
 # Projeto final de RMA
-##### Ideia
-Fazer um robô que se mova através do circuito no arquivo `src/plano_5x5_com_carrinho.ttt` de forma autônoma.
+## Passo a passo
+Para rodar o projeto, basta seguir o passo a passo abaixo, obedecendo a ordem:
+1. Abrir o arquivo `labirinto.ttt` no copelliaSim, selecionando File >> Open scene... >> escolha o arquivo `labirinto.ttt`.
+2. Habilitar o Real-Time mode (clicando no botão com um relógio escrito RT).
+3. Clicar no Start/Resume simulation (o botão com o ícone que parece a logo do youtube).
+4. Executar o arquivo s1.py: `python src/s1.py`, quando na pasta principal do projeto, ou `python s1.py` se dentro da pasta src.
+5. Esperar o robô atravessar o labirinto.
 
-##### Estrutura (passível de mudança ao longo do projeto)
+Gravação acelerada com uma simulação no pc do lab 404-1: https://youtu.be/2kOpwJvSXE8
+
+## Ressalva
+Devido ao simulador rodar a simulação com base nos recursos computacionais da máquina, é possível que simulações em máquinas consideravelmente mais lentas ou mais potentes do que os computadores do lab 404-1 contem com colisões, devido à diferença no tempo necessário para o processamento das informações dos sensores e envio das instruções para o simulador. O código é feito de forma que funcione plenamente nos computadores do lab 404-1, com o robô completando o labirinto aproximados 6 minutos.
+
+## Software necessário
+- Coppeliasim (versão gratuita disponível em https://www.coppeliarobotics.com)
+- Python3
+
+## Estrutura do código
 ```
 src
-├── camp_pot.py
-├── plano_5x5_com_carrinho.ttt
+├── labirinto.ttt
 ├── remoteApi.dll
 ├── remoteApi.so
 ├── s1.py
 ├── simConst.py
 └── sim.py
 ```
-##### Guia básico
-O arquivo `src/sim.py` controla as funções de simulação do robô, com o arquivo sendo disponibilizado pelo Coppelia (ferramenta da simulação). 
-Para executar o projeto, basta ter o python e o coppelia instalados. É possível executar os comandos manualmente, mas também há um makefile que executa diretamente os seguintes comandos:
-- s1 (executa o arquivo s1.py)
-- camp (executa o arquivo camp_pot.py)
-Caso não saiba usar o make, basta digitar no terminal `make run (comando)`
-Para o funcionamento dos scripts, é necessário anteriormente iniciar a simulação no coppelia, seguindo o passo a passo:
-[Colocar aqui o passo a passo com prints]
+O arquivo `s1.py` contém o código que controla o robô. 
+`simConst.py`, `sim.py`, e os `remoteApi` são arquivos advindos do copelliasim para permitir a integração com o simulador.
 
-##### O que falta
-No S1:
-1. Fazer o robô evitar paredes
-2. Implementação da lógica de seguir caminhos (possivelmente até algum objetivo)
-
-No camp_pot:
-1. Corrigir o loop/adicionar outras condições
-
-##### ERROS ATUAIS
-- em `src/camp_pot.py`, há um loop incompleto, que dá erro e impede a execução do script
-- O robô não se move corretamente em `src/s1.py`, batendo nas paredes e segue sem caminho
-
-##### Membros
+## Membros
 - Henrique Silva Barbosa
 - Matheus Souza Zanzin
 - Rodrigo Guikang Liu
