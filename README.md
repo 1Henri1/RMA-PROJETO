@@ -10,7 +10,7 @@ Para rodar o projeto, basta seguir o passo a passo abaixo, obedecendo a ordem:
 Gravação acelerada com uma simulação no pc do lab 404-1: https://youtu.be/2kOpwJvSXE8
 
 ## Ressalva
-Devido ao simulador rodar a simulação com base nos recursos computacionais da máquina, é possível que simulações em máquinas consideravelmente mais lentas ou mais potentes do que os computadores do lab 404-1 contem com colisões, devido à diferença no tempo necessário para o processamento das informações dos sensores e envio das instruções para o simulador. O código é feito de forma que funcione plenamente nos computadores do lab 404-1, com o robô completando o labirinto aproximados 6 minutos.
+Devido ao simulador rodar a simulação com base nos recursos computacionais da máquina, é possível que simulações em máquinas consideravelmente mais lentas ou mais potentes do que os computadores do lab 404-1 contem com colisões, devido à diferença no tempo necessário para o processamento das informações dos sensores e envio das instruções para o simulador. O código é feito de forma que funcione plenamente nos computadores do lab 404-1, com o robô completando o labirinto aproximadamente 6 minutos.
 
 ## Software necessário
 - Coppeliasim (versão gratuita disponível em https://www.coppeliarobotics.com)
